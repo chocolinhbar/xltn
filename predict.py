@@ -1,6 +1,7 @@
 import os
 
 import librosa
+import pyaudio
 import numpy as np
 from keras.models import load_model
 
@@ -21,6 +22,18 @@ def get_input_audio(file_path):
 
 	return audios_mfcc[:,:,:,None]
 
+def get_input_audio_mic():
+	p = pyaudio.PyAudio()
+	stream = p.open(format=pyaudio.paInt16, channels=1, rate=22050, input=True)
+	print('recording...')
+
+	data = stream.read(22050*5)
+	recorded = np.frombuffer(data, dtype=np.int16) / 2**15
+
+	audio_mfcc = process_audio(recorded)
+
+	return audio_mfcc[None,:,:,None]
+
 def predict(input_audio, threshold=0.75):
 	probs = model.predict(input_audio)
 	probs = np.mean(probs, axis=0)
@@ -37,7 +50,8 @@ def predict(input_audio, threshold=0.75):
 if __name__ == '__main__':
 
 	while True:
-		input_audio = get_input_audio(input('file path: '))
+		# input_audio = get_input_audio(input('file path: '))
+		input_audio = get_input_audio_mic()
 		genre = predict(input_audio)
 
 		print(genre)
