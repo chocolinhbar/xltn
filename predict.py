@@ -50,8 +50,8 @@ def predict(input_audio, threshold=0.75):
 if __name__ == '__main__':
 
 	while True:
-		# input_audio = get_input_audio(input('file path: '))
-		input_audio = get_input_audio_mic()
+		input_audio = get_input_audio(input('file path: '))
+		#input_audio = get_input_audio_mic()
 		genre = predict(input_audio)
 
 		print(genre)
